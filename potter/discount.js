@@ -1,20 +1,20 @@
 const BOOK_PRICE = 8;
 const DISCOUNTS = [0, 1, 0.95, 0.9, 0.8, 0.75];
+const INITIAL_DISCOUNT_DICTIONARY = {};
 
-const createDiscount = (discount, bookNumber) => () =>
-  bookNumber * BOOK_PRICE * discount;
+const createDiscount = (rate, bookNumber) => () =>
+  bookNumber * BOOK_PRICE * rate;
 
-const addRule = (discountRate, bookNumber, ruleSet = {}) => ({
-  ...ruleSet,
-  [bookNumber]: createDiscount(discountRate, bookNumber)
+const discountReducer = (discountsDictionary, rate, bookNumber) => ({
+  ...discountsDictionary,
+  [bookNumber]: createDiscount(rate, bookNumber)
 });
 
-const rules = DISCOUNTS.reduce(
-  (acc, amount, bookNumber) => ({
-    ...acc,
-    [bookNumber]: createDiscount(amount, bookNumber)
-  }),
-  {}
+const discounts = DISCOUNTS.reduce(
+  discountReducer,
+  INITIAL_DISCOUNT_DICTIONARY
 );
 
-module.exports = { rules };
+const applyDiscount = bookNumber => discounts[bookNumber]();
+
+module.exports = { discounts, applyDiscount };
